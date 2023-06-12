@@ -1,0 +1,85 @@
+import { InlineConfig, build as viteBuild } from 'vite'
+import { CLIENT_ENTRY_PATH, SERVER_ENTRY_PATH } from './constants';
+import type { RollupOutput } from 'rollup'
+import * as fs from 'fs-extra';
+import * as path from 'path';
+
+
+export async function bundle(root: string) {
+    try {
+        const resolveViteConfig = (isServer: boolean): InlineConfig => {
+            return {
+                mode: 'production',
+                root,
+                build: {
+                    ssr: isServer,
+                    outDir: isServer ? '.temp': 'build',
+                    rollupOptions: {
+                        input: isServer ? SERVER_ENTRY_PATH: CLIENT_ENTRY_PATH,
+                        output: {
+                            format: isServer ? 'cjs': 'esm'
+                        }
+                    }
+                }
+            }
+        }
+
+        const clientBuild = async () => {
+            return viteBuild(resolveViteConfig(false))
+        }
+
+        const serverBuild = async () => {
+            return viteBuild(resolveViteConfig(true))
+        }
+        
+        console.log("Building client bundle and server bundle...");
+
+        const [clientBundle, serverBundle]  = await Promise.all([
+            clientBuild(),
+            serverBuild(),
+        ])
+
+        return [ clientBundle, serverBundle ];
+    } catch(e) {
+        console.log(e);
+    }
+}
+
+export async function renderPage(
+    render: () => string,
+    root: string,
+    clientBundle: RollupOutput,
+){
+    const appHtml = render();
+    const clientChunk = clientBundle.output.find(chunk => chunk.type === 'chunk' && chunk.isEntry);
+
+    const html = `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>template</title>
+        </head>
+        <body>
+            <div id="root">${appHtml}</div>
+            <script src="/${clientChunk.fileName}" type="module"></script>
+        </body>
+        </html>
+    `.trim();
+
+    await fs.writeFile(path.join(root, 'build', 'index.html'), html);
+    await fs.remove(path.join(root, '.temp'));
+}
+
+export async function build(root: string) {
+    // bundle code: server and client
+    const [clientBundle] = await bundle(root);
+
+    // import server-entry module
+    const serverEntryPath = path.resolve(root, '.temp', 'ssr-entry.js');
+    // ssr render, generate html
+    const { render } = require(serverEntryPath);
+    await renderPage(render, root, clientBundle as RollupOutput);
+}
