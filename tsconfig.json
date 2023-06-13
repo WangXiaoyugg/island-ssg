@@ -4,6 +4,10 @@
         "module": "CommonJS",
         "outDir": "dist",
         "rootDir": "src",
-        "target": "ESNext"
-    }
+        "target": "ESNext",
+        "esModuleInterop": true,
+    },
+    "exclude": [
+        "./tsup.config.ts"
+    ]
 }

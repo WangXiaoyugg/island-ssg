@@ -1,9 +1,12 @@
 import { InlineConfig, build as viteBuild } from 'vite'
 import { CLIENT_ENTRY_PATH, SERVER_ENTRY_PATH } from './constants';
 import type { RollupOutput } from 'rollup'
-import * as fs from 'fs-extra';
-import * as path from 'path';
+import { pathToFileURL } from 'url';
+import fs from 'fs-extra';
+import path from 'path';
+import ora from 'ora';
 
+// const dynamicImport = new Function('m', 'return import(m)');
 
 export async function bundle(root: string) {
     try {
@@ -32,7 +35,8 @@ export async function bundle(root: string) {
             return viteBuild(resolveViteConfig(true))
         }
         
-        console.log("Building client bundle and server bundle...");
+        const spinner = ora();
+        spinner.start("Building client bundle and server bundle...")
 
         const [clientBundle, serverBundle]  = await Promise.all([
             clientBuild(),
@@ -80,6 +84,6 @@ export async function build(root: string) {
     // import server-entry module
     const serverEntryPath = path.resolve(root, '.temp', 'ssr-entry.js');
     // ssr render, generate html
-    const { render } = require(serverEntryPath);
+    const { render } = await import((pathToFileURL(serverEntryPath).toString()));
     await renderPage(render, root, clientBundle as RollupOutput);
 }
