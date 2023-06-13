@@ -1,4 +1,4 @@
-// node_modules/.pnpm/registry.npmmirror.com+tsup@6.7.0_typescript@5.1.3/node_modules/tsup/assets/esm_shims.js
+// node_modules/.pnpm/registry.npmmirror.com+tsup@6.7.0_ts-node@10.9.1_typescript@5.0.4/node_modules/tsup/assets/esm_shims.js
 import { fileURLToPath } from "url";
 import path from "path";
 var getFilename = () => fileURLToPath(import.meta.url);
@@ -52,9 +52,13 @@ function pluginIndexHtml() {
     },
     configureServer(server) {
       return () => {
-        server.middlewares.use(async (req, res, next) => {
+        server.middlewares.use(async (req, res) => {
           let content = await readFile(DEFAULT_TEMPLATE_PATH, "utf-8");
-          content = await server.transformIndexHtml(req.url, content, req.originalUrl);
+          content = await server.transformIndexHtml(
+            req.url,
+            content,
+            req.originalUrl
+          );
           res.setHeader("Content-Type", "text/html");
           res.end(content);
         });
@@ -68,10 +72,12 @@ import pluginReact from "@vitejs/plugin-react";
 function createDevServer(root) {
   return createServer({
     root,
-    plugins: [
-      pluginIndexHtml(),
-      pluginReact()
-    ]
+    plugins: [pluginIndexHtml(), pluginReact()],
+    server: {
+      fs: {
+        allow: [PACKAGE_ROOT]
+      }
+    }
   });
 }
 
@@ -118,7 +124,9 @@ async function bundle(root) {
 }
 async function renderPage(render, root, clientBundle) {
   const appHtml = render();
-  const clientChunk = clientBundle.output.find((chunk) => chunk.type === "chunk" && chunk.isEntry);
+  const clientChunk = clientBundle.output.find(
+    (chunk) => chunk.type === "chunk" && chunk.isEntry
+  );
   const html = `
         <!DOCTYPE html>
         <html lang="en">
@@ -147,11 +155,13 @@ async function build(root) {
 // src/node/cli.ts
 var cli = cac("island").version("0.0.1").help();
 cli.command("dev [root]", "start dev server").action(async (root) => {
+  console.log("start dev server");
   const server = await createDevServer(root);
   await server.listen();
   server.printUrls();
 });
 cli.command("build [root]", "build a production").action(async (root) => {
+  console.log("start building");
   await build(root);
 });
 cli.parse();

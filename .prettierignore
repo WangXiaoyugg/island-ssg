@@ -5,3 +5,4 @@ pnpm-lock.yaml
 dist
 bin
 docs
+.vitest.config.ts

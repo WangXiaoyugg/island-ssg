@@ -16,7 +16,12 @@ module.exports = {
     },
     plugins: ["react", '@typescript-eslint', "react-hooks", "prettier"],
     rules: {
-        "prettier/prettier": "error",
+        "prettier/prettier": [
+            "error",
+            {
+                "endOfLine": "auto"
+            }
+        ],
         quotes: ["error", "single"],
         semi: ['error', "always"],
         "react/react-in-jsx-scope": "off",

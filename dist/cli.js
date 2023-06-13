@@ -45,9 +45,13 @@ function pluginIndexHtml() {
     },
     configureServer(server) {
       return () => {
-        server.middlewares.use(async (req, res, next) => {
+        server.middlewares.use(async (req, res) => {
           let content = await _promises.readFile.call(void 0, DEFAULT_TEMPLATE_PATH, "utf-8");
-          content = await server.transformIndexHtml(req.url, content, req.originalUrl);
+          content = await server.transformIndexHtml(
+            req.url,
+            content,
+            req.originalUrl
+          );
           res.setHeader("Content-Type", "text/html");
           res.end(content);
         });
@@ -61,10 +65,12 @@ var _pluginreact = require('@vitejs/plugin-react'); var _pluginreact2 = _interop
 function createDevServer(root) {
   return _vite.createServer.call(void 0, {
     root,
-    plugins: [
-      pluginIndexHtml(),
-      _pluginreact2.default.call(void 0, )
-    ]
+    plugins: [pluginIndexHtml(), _pluginreact2.default.call(void 0, )],
+    server: {
+      fs: {
+        allow: [PACKAGE_ROOT]
+      }
+    }
   });
 }
 
@@ -111,7 +117,9 @@ async function bundle(root) {
 }
 async function renderPage(render, root, clientBundle) {
   const appHtml = render();
-  const clientChunk = clientBundle.output.find((chunk) => chunk.type === "chunk" && chunk.isEntry);
+  const clientChunk = clientBundle.output.find(
+    (chunk) => chunk.type === "chunk" && chunk.isEntry
+  );
   const html = `
         <!DOCTYPE html>
         <html lang="en">
@@ -140,11 +148,13 @@ async function build(root) {
 // src/node/cli.ts
 var cli = _cac2.default.call(void 0, "island").version("0.0.1").help();
 cli.command("dev [root]", "start dev server").action(async (root) => {
+  console.log("start dev server");
   const server = await createDevServer(root);
   await server.listen();
   server.printUrls();
 });
 cli.command("build [root]", "build a production").action(async (root) => {
+  console.log("start building");
   await build(root);
 });
 cli.parse();
