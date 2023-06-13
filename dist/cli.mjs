@@ -69,7 +69,44 @@ function pluginIndexHtml() {
 
 // src/node/dev.ts
 import pluginReact from "@vitejs/plugin-react";
-function createDevServer(root) {
+
+// src/node/config.ts
+import { resolve } from "path";
+import fse from "fs-extra";
+import { loadConfigFromFile } from "vite";
+function getUserConfigPath(root) {
+  try {
+    const supportConfigFiles = ["config.ts", "config.js"];
+    const configPath = supportConfigFiles.map((file) => resolve(root, file)).find(fse.pathExistsSync);
+    return configPath;
+  } catch (e) {
+    console.log("Failed to load user config.");
+    throw e;
+  }
+}
+async function resolveConfig(root, command, mode) {
+  const configPath = getUserConfigPath(root);
+  const result = await loadConfigFromFile(
+    {
+      command,
+      mode
+    },
+    configPath,
+    root
+  );
+  if (result) {
+    const { config: rawConfig = {} } = result;
+    const userConfig = await (typeof rawConfig === "function" ? rawConfig() : rawConfig);
+    return [configPath, userConfig];
+  } else {
+    return [configPath, {}];
+  }
+}
+
+// src/node/dev.ts
+async function createDevServer(root) {
+  const config = await resolveConfig(root, "serve", "development");
+  console.log(config);
   return createServer({
     root,
     plugins: [pluginIndexHtml(), pluginReact()],
