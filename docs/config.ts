@@ -1,6 +1,5 @@
-import { defineConfig } from "../dist/index.js";
+import { defineConfig } from '../dist';
 
 export default defineConfig({
-    title: '测试',
-    description: '测试'
-})
+  title: 'xxx'
+});

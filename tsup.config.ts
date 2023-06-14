@@ -9,5 +9,8 @@ export default defineConfig({
   format: ['cjs', 'esm'],
   dts: true,
   shims: true,
-  minify: process.env.NODE_ENV === 'production'
+  minify: process.env.NODE_ENV === 'production',
+  banner: {
+    js: 'import { createRequire } from "module"; const require = createRequire(import.meta.url);'
+  }
 });
