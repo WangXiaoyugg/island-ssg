@@ -5,6 +5,7 @@
     "outDir": "dist",
     "rootDir": ".",
     "target": "ESNext",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "baseUrl": "src"
   }
 }
