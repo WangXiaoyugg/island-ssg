@@ -6,6 +6,10 @@
     "rootDir": ".",
     "target": "ESNext",
     "esModuleInterop": true,
-    "baseUrl": "src"
+    "baseUrl": "src",
+    "paths": {
+      "shared/*": ["shared/*"],
+      "@runtime": ["runtime/index.ts"]
+    }
   }
 }

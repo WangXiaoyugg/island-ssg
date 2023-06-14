@@ -4,19 +4,26 @@ import type { RollupOutput } from 'rollup';
 import { pathToFileURL } from 'url';
 import fs from 'fs-extra';
 import path from 'path';
-import ora from 'ora';
+// import ora from 'ora';
+import { SiteConfig } from 'shared/types';
+import pluginReact from '@vitejs/plugin-react';
+import { pluginConfig } from './plugin-island/config';
 
 // const dynamicImport = new Function('m', 'return import(m)');
 
-export async function bundle(root: string) {
+export async function bundle(root: string, config: SiteConfig) {
   try {
     const resolveViteConfig = (isServer: boolean): InlineConfig => {
       return {
         mode: 'production',
         root,
+        plugins: [pluginReact(), pluginConfig(config)],
+        ssr: {
+          noExternal: ['react-router-dom']
+        },
         build: {
           ssr: isServer,
-          outDir: isServer ? '.temp' : 'build',
+          outDir: isServer ? path.resolve(root, '.temp') : 'build',
           rollupOptions: {
             input: isServer ? SERVER_ENTRY_PATH : CLIENT_ENTRY_PATH,
             output: {
@@ -35,8 +42,8 @@ export async function bundle(root: string) {
       return viteBuild(resolveViteConfig(true));
     };
 
-    const spinner = ora();
-    spinner.start('Building client bundle and server bundle...');
+    // const spinner = ora();
+    // spinner.start('Building client bundle and server bundle...');
 
     const [clientBundle, serverBundle] = await Promise.all([
       clientBuild(),
@@ -79,9 +86,9 @@ export async function renderPage(
   await fs.remove(path.join(root, '.temp'));
 }
 
-export async function build(root: string) {
+export async function build(root: string = process.cwd(), config: SiteConfig) {
   // bundle code: server and client
-  const [clientBundle] = await bundle(root);
+  const [clientBundle] = await bundle(root, config);
 
   // import server-entry module
   const serverEntryPath = path.resolve(root, '.temp', 'ssr-entry.js');

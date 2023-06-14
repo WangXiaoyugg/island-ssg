@@ -1,12 +1,13 @@
-import { relative } from 'path';
+import { join, relative } from 'path';
 import { SiteConfig } from '../../shared/types';
 import { Plugin } from 'vite';
+import { PACKAGE_ROOT } from 'node/constants';
 
 const SITE_DATA_ID = 'island:site-data';
 
 export function pluginConfig(
   config: SiteConfig,
-  restart: () => Promise<void>
+  restart?: () => Promise<void>
 ): Plugin {
   return {
     name: 'island:site-data',
@@ -20,13 +21,20 @@ export function pluginConfig(
         return `export default ${JSON.stringify(config.siteData)}`;
       }
     },
+    config() {
+      return {
+        root: PACKAGE_ROOT,
+        resolve: {
+          alias: {
+            '@runtime': join(PACKAGE_ROOT, 'src', 'runtime', 'index.ts')
+          }
+        }
+      };
+    },
     async handleHotUpdate(ctx) {
-      console.log('ctx: ', ctx.file);
       const customWatchedFiles = [config.configPath.replaceAll('\\', '/')];
-      console.log('customWatchedFiles: ', customWatchedFiles);
       const include = (id: string) =>
         customWatchedFiles.some((file) => id.includes(file));
-      console.log('include: ', include(ctx.file));
       if (include(ctx.file)) {
         console.log(
           `\n${relative(config.root, ctx.file)} changed, restarting server...`
