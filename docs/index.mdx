@@ -1,0 +1,26 @@
+---
+title: 'island'
+---
+
+##  GFM 
+
+## Autolink 
+
+literals www.example.com, https://example.com, and contact@example.com.
+
+
+```ts
+import rehypePluginAutolinkHeadings from 'rehype-autolink-headings';
+import rehypePluginSlug from 'rehype-slug';
+import remarkPluginMDXFrontMatter from 'remark-mdx-frontmatter';
+import remarkPluginFrontmatter from 'remark-frontmatter';
+import { rehypePluginPreWrapper } from './rehypePlugins/preWrapper';
+import { rehypePluginShiki } from './rehypePlugins/shiki';
+import shiki from 'shiki';
+
+import { pluginMdxRollup } from './pluginMdxRollup';
+
+export async function createMdxPlugin() {
+  return [await pluginMdxRollup()];
+}
+```

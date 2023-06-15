@@ -4,9 +4,9 @@ import { pluginConfig } from './plugin-island/config';
 import { pluginRoutes } from './plugin-routes';
 import pluginReact from '@vitejs/plugin-react';
 import { Plugin } from 'vite';
-import { pluginMdxRollup } from './plugin-mdx/pluginMdxRollup';
+import { createMdxPlugin } from './plugin-mdx/index';
 
-export function createVitePlugins(
+export async function createVitePlugins(
   config: SiteConfig,
   restartServer?: () => Promise<void>
 ) {
@@ -17,6 +17,6 @@ export function createVitePlugins(
     }),
     pluginConfig(config, restartServer),
     pluginRoutes({ root: config.root }),
-    pluginMdxRollup()
+    await createMdxPlugin()
   ] as Plugin[];
 }
