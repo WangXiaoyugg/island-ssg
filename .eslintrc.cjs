@@ -25,6 +25,8 @@ module.exports = {
         quotes: ["error", "single"],
         semi: ['error', "always"],
         "react/react-in-jsx-scope": "off",
+        'react/no-unknown-property': 'off',
+        "@typescript-eslint/no-empty-interface": "off",
     },
     settings: {
         "react": {
