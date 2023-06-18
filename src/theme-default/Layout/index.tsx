@@ -1,9 +1,11 @@
 import { usePageData } from '@runtime';
+import '../styles/base.css';
+import '../styles/vars.css';
+import { Nav } from '../components/Nav';
 
 export function Layout() {
   const pageData = usePageData();
   const { pageType } = pageData;
-  console.log(pageData);
 
   const getContent = () => {
     if (pageType === 'home') {
@@ -15,5 +17,9 @@ export function Layout() {
     }
   };
 
-  return <div>{getContent()}</div>;
+  return (
+    <div>
+      <Nav />
+    </div>
+  );
 }

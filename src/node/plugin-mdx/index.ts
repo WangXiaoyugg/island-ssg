@@ -1,5 +1,6 @@
 import { pluginMdxHMR } from './pluginMdxHrm';
 import { pluginMdxRollup } from './pluginMdxRollup';
+import { Plugin } from 'vite';
 
 // Vite 热更新机制
 // 1. 监听到文件变动
@@ -7,6 +8,6 @@ import { pluginMdxRollup } from './pluginMdxRollup';
 // 3. 执行更新逻辑
 
 // React 的组件的热更新方式，依赖react-fresh
-export async function createMdxPlugin() {
+export async function createMdxPlugin(): Promise<Plugin[]> {
   return [await pluginMdxRollup(), pluginMdxHMR()];
 }

@@ -8,6 +8,7 @@ import { rehypePluginPreWrapper } from './rehypePlugins/preWrapper';
 import { rehypePluginShiki } from './rehypePlugins/shiki';
 import shiki from 'shiki';
 import { remarkPluginToc } from './remarkPlugins/toc';
+import type { Plugin } from 'vite';
 
 export async function pluginMdxRollup() {
   return [
@@ -43,5 +44,5 @@ export async function pluginMdxRollup() {
         ]
       ]
     })
-  ];
+  ] as unknown as Plugin;
 }
