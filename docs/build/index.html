@@ -1,13 +1,30 @@
 <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta http-equiv="X-UA-Compatible" content="IE=edge">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>template</title>
-        </head>
-        <body>
-            <div id="root"><div><h1>Common Content</h1><h1>Doc Content</h1><div>Hello, route A</div></div></div>
-            <script src="/assets/client-entry-82709372.js" type="module"></script>
-        </body>
-        </html>
+      <html lang="en">
+      <head>
+          <meta charset="UTF-8">
+          <meta http-equiv="X-UA-Compatible" content="IE=edge">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>template</title>
+      </head>
+      <body>
+          <div id="root"><div><h1>Common Content</h1><h1>Doc Content</h1><div><p>0</p><button>点击加1</button></div>
+<h2 id="gfm-12324566"><a class="header-anchor" href="#gfm-12324566">#</a>GFM 12324566</h2>
+<h2 id="autolink-qew"><a class="header-anchor" href="#autolink-qew">#</a>Autolink qew</h2>
+<p>literals <a href="http://www.example.com">www.example.com</a>, <a href="https://example.com">https://example.com</a>, and <a href="mailto:contact@example.com">contact@example.com</a>.</p>
+<div class="language-ts"><span class="lang">ts</span><pre class="shiki nord" style="background-color:#2e3440ff" tabindex="0"><code><span class="line"><span style="color:#81A1C1">import</span><span style="color:#D8DEE9FF"> </span><span style="color:#D8DEE9">rehypePluginAutolinkHeadings</span><span style="color:#D8DEE9FF"> </span><span style="color:#81A1C1">from</span><span style="color:#D8DEE9FF"> </span><span style="color:#ECEFF4">&#x27;</span><span style="color:#A3BE8C">rehype-autolink-headings</span><span style="color:#ECEFF4">&#x27;</span><span style="color:#81A1C1">;</span></span>
+<span class="line"><span style="color:#81A1C1">import</span><span style="color:#D8DEE9FF"> </span><span style="color:#D8DEE9">rehypePluginSlug</span><span style="color:#D8DEE9FF"> </span><span style="color:#81A1C1">from</span><span style="color:#D8DEE9FF"> </span><span style="color:#ECEFF4">&#x27;</span><span style="color:#A3BE8C">rehype-slug</span><span style="color:#ECEFF4">&#x27;</span><span style="color:#81A1C1">;</span></span>
+<span class="line"><span style="color:#81A1C1">import</span><span style="color:#D8DEE9FF"> </span><span style="color:#D8DEE9">remarkPluginMDXFrontMatter</span><span style="color:#D8DEE9FF"> </span><span style="color:#81A1C1">from</span><span style="color:#D8DEE9FF"> </span><span style="color:#ECEFF4">&#x27;</span><span style="color:#A3BE8C">remark-mdx-frontmatter</span><span style="color:#ECEFF4">&#x27;</span><span style="color:#81A1C1">;</span></span>
+<span class="line"><span style="color:#81A1C1">import</span><span style="color:#D8DEE9FF"> </span><span style="color:#D8DEE9">remarkPluginFrontmatter</span><span style="color:#D8DEE9FF"> </span><span style="color:#81A1C1">from</span><span style="color:#D8DEE9FF"> </span><span style="color:#ECEFF4">&#x27;</span><span style="color:#A3BE8C">remark-frontmatter</span><span style="color:#ECEFF4">&#x27;</span><span style="color:#81A1C1">;</span></span>
+<span class="line"><span style="color:#81A1C1">import</span><span style="color:#D8DEE9FF"> </span><span style="color:#ECEFF4">{</span><span style="color:#D8DEE9FF"> </span><span style="color:#D8DEE9">rehypePluginPreWrapper</span><span style="color:#D8DEE9FF"> </span><span style="color:#ECEFF4">}</span><span style="color:#D8DEE9FF"> </span><span style="color:#81A1C1">from</span><span style="color:#D8DEE9FF"> </span><span style="color:#ECEFF4">&#x27;</span><span style="color:#A3BE8C">./rehypePlugins/preWrapper</span><span style="color:#ECEFF4">&#x27;</span><span style="color:#81A1C1">;</span></span>
+<span class="line"><span style="color:#81A1C1">import</span><span style="color:#D8DEE9FF"> </span><span style="color:#ECEFF4">{</span><span style="color:#D8DEE9FF"> </span><span style="color:#D8DEE9">rehypePluginShiki</span><span style="color:#D8DEE9FF"> </span><span style="color:#ECEFF4">}</span><span style="color:#D8DEE9FF"> </span><span style="color:#81A1C1">from</span><span style="color:#D8DEE9FF"> </span><span style="color:#ECEFF4">&#x27;</span><span style="color:#A3BE8C">./rehypePlugins/shiki</span><span style="color:#ECEFF4">&#x27;</span><span style="color:#81A1C1">;</span></span>
+<span class="line"><span style="color:#81A1C1">import</span><span style="color:#D8DEE9FF"> </span><span style="color:#D8DEE9">shiki</span><span style="color:#D8DEE9FF"> </span><span style="color:#81A1C1">from</span><span style="color:#D8DEE9FF"> </span><span style="color:#ECEFF4">&#x27;</span><span style="color:#A3BE8C">shiki</span><span style="color:#ECEFF4">&#x27;</span><span style="color:#81A1C1">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#81A1C1">import</span><span style="color:#D8DEE9FF"> </span><span style="color:#ECEFF4">{</span><span style="color:#D8DEE9FF"> </span><span style="color:#D8DEE9">pluginMdxRollup</span><span style="color:#D8DEE9FF"> </span><span style="color:#ECEFF4">}</span><span style="color:#D8DEE9FF"> </span><span style="color:#81A1C1">from</span><span style="color:#D8DEE9FF"> </span><span style="color:#ECEFF4">&#x27;</span><span style="color:#A3BE8C">./pluginMdxRollup</span><span style="color:#ECEFF4">&#x27;</span><span style="color:#81A1C1">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#81A1C1">export</span><span style="color:#D8DEE9FF"> </span><span style="color:#81A1C1">async</span><span style="color:#D8DEE9FF"> </span><span style="color:#81A1C1">function</span><span style="color:#D8DEE9FF"> </span><span style="color:#88C0D0">createMdxPlugin</span><span style="color:#ECEFF4">()</span><span style="color:#D8DEE9FF"> </span><span style="color:#ECEFF4">{</span></span>
+<span class="line"><span style="color:#D8DEE9FF">  </span><span style="color:#81A1C1">return</span><span style="color:#D8DEE9FF"> [</span><span style="color:#81A1C1">await</span><span style="color:#D8DEE9FF"> </span><span style="color:#88C0D0">pluginMdxRollup</span><span style="color:#D8DEE9FF">()]</span><span style="color:#81A1C1">;</span></span>
+<span class="line"><span style="color:#ECEFF4">}</span></span>
+<span class="line"></span></code></pre></div></div></div>
+          <script src="/assets/client-entry-24c64711.js" type="module"></script>
+      </body>
+      </html>

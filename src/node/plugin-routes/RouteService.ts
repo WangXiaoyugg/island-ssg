@@ -15,13 +15,17 @@ export class RouteService {
     this.#scanDir = scanDir;
   }
 
-  generateRoutesCode() {
+  generateRoutesCode(ssr = false) {
+    console.log('ssr: ', ssr);
     return `
-    import React from 'react'
-    import loadable from '@loadable/component'
+    import React from 'react';
+    ${ssr ? '' : 'import loadable from "@loadable/component";'}
+    
     ${this.#routeData
       .map((route, index) => {
-        return `const Route${index} = loadable(() => import('${route.absolutePath}'));`;
+        return ssr
+          ? `import Route${index} from "${route.absolutePath}";`
+          : `const Route${index} = loadable(() => import('${route.absolutePath}'));`;
       })
       .join('\n')}
     

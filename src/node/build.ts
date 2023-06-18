@@ -3,10 +3,11 @@ import { CLIENT_ENTRY_PATH, SERVER_ENTRY_PATH } from './constants';
 import type { RollupOutput } from 'rollup';
 import { pathToFileURL } from 'url';
 import fs from 'fs-extra';
-import path from 'path';
+import path, { dirname, join } from 'path';
 // import ora from 'ora';
 import { SiteConfig } from 'shared/types';
 import { createVitePlugins } from './vitePlugins';
+import { Route } from './plugin-routes';
 
 // const dynamicImport = new Function('m', 'return import(m)');
 
@@ -18,13 +19,15 @@ export async function bundle(root: string, config: SiteConfig) {
       return {
         mode: 'production',
         root,
-        plugins: await createVitePlugins(config),
+        plugins: await createVitePlugins(config, undefined, isServer),
         ssr: {
           noExternal: ['react-router-dom']
         },
         build: {
           ssr: isServer,
-          outDir: isServer ? path.resolve(root, '.temp') : 'build',
+          outDir: isServer
+            ? path.resolve(root, '.temp')
+            : path.resolve(root, 'build'),
           rollupOptions: {
             input: isServer ? SERVER_ENTRY_PATH : CLIENT_ENTRY_PATH,
             output: {
@@ -35,55 +38,55 @@ export async function bundle(root: string, config: SiteConfig) {
       };
     };
 
-    const clientBuild = async () => {
-      return viteBuild(await resolveViteConfig(false));
-    };
-
-    const serverBuild = async () => {
-      return viteBuild(await resolveViteConfig(true));
-    };
-
-    // const spinner = ora();
-    // spinner.start('Building client bundle and server bundle...');
-
     const [clientBundle, serverBundle] = await Promise.all([
-      clientBuild(),
-      serverBuild()
+      // client build
+      viteBuild(await resolveViteConfig(false)),
+      // server build
+      viteBuild(await resolveViteConfig(true))
     ]);
-
-    return [clientBundle, serverBundle];
+    return [clientBundle, serverBundle] as [RollupOutput, RollupOutput];
   } catch (e) {
-    console.log(e);
+    console.log('error: ', e);
   }
 }
 
-export async function renderPage(
-  render: () => string,
+export async function renderPages(
+  render: (pagePath: string) => string,
   root: string,
-  clientBundle: RollupOutput
+  clientBundle: RollupOutput,
+  routes: Route[]
 ) {
-  const appHtml = render();
   const clientChunk = clientBundle.output.find(
     (chunk) => chunk.type === 'chunk' && chunk.isEntry
   );
 
-  const html = `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta http-equiv="X-UA-Compatible" content="IE=edge">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>template</title>
-        </head>
-        <body>
-            <div id="root">${appHtml}</div>
-            <script src="/${clientChunk.fileName}" type="module"></script>
-        </body>
-        </html>
-    `.trim();
+  await Promise.all(
+    routes.map(async (route) => {
+      const routePath = route.path;
+      const appHtml = render(routePath);
 
-  await fs.writeFile(path.join(root, 'build', 'index.html'), html);
+      const html = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+          <meta charset="UTF-8">
+          <meta http-equiv="X-UA-Compatible" content="IE=edge">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>template</title>
+      </head>
+      <body>
+          <div id="root">${appHtml}</div>
+          <script src="/${clientChunk.fileName}" type="module"></script>
+      </body>
+      </html>
+  `.trim();
+      const fileName = routePath.endsWith('/')
+        ? `${routePath}index.html`
+        : `${routePath}.html`;
+      await fs.ensureDir(join(root, 'build', dirname(fileName)));
+      await fs.writeFile(join(root, 'build', fileName), html);
+    })
+  );
   await fs.remove(path.join(root, '.temp'));
 }
 
@@ -94,6 +97,8 @@ export async function build(root: string = process.cwd(), config: SiteConfig) {
   // import server-entry module
   const serverEntryPath = path.resolve(root, '.temp', 'ssr-entry.js');
   // ssr render, generate html
-  const { render } = await import(pathToFileURL(serverEntryPath).toString());
-  await renderPage(render, root, clientBundle as RollupOutput);
+  const { render, routes } = await import(
+    pathToFileURL(serverEntryPath).toString()
+  );
+  await renderPages(render, root, clientBundle as RollupOutput, routes);
 }
