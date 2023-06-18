@@ -1,8 +1,9 @@
 import fastGlob from 'fast-glob';
 import { normalizePath } from 'vite';
 import path from 'path';
+import { PageModule } from 'shared/types';
 
-interface RouteMeta {
+export interface RouteMeta {
   routePath: string;
   absolutePath: string;
 }
@@ -32,7 +33,7 @@ export class RouteService {
     export const routes = [
         ${this.#routeData
           .map((route, index) => {
-            return `{path: '${route.routePath}', element: React.createElement(Route${index})}`;
+            return `{path: '${route.routePath}', element: React.createElement(Route${index}), preload: () => import('${route.absolutePath}')}`;
           })
           .join(',\n')}
     ]

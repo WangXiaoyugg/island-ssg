@@ -1,18 +1,21 @@
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
-import siteData from 'island:site-data';
 import { BrowserRouter } from 'react-router-dom';
+import { initPageData } from './App';
+import { DataContext } from './hooks';
 
-function renderInBrowser() {
-  console.log(siteData);
+async function renderInBrowser() {
   const containerElement = document.getElementById('root');
   if (!containerElement) {
     throw new Error('#root element not found');
   }
+  const pageData = await initPageData(location.pathname);
   createRoot(containerElement).render(
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <DataContext.Provider value={pageData}>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </DataContext.Provider>
   );
 }
 
