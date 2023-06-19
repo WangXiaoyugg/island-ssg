@@ -2,6 +2,8 @@ import { join, relative } from 'path';
 import { SiteConfig } from '../../shared/types';
 import { Plugin } from 'vite';
 import { PACKAGE_ROOT } from 'node/constants';
+import sirv from 'sirv';
+import fs from 'fs-extra';
 
 const SITE_DATA_ID = 'island:site-data';
 
@@ -49,6 +51,13 @@ export function pluginConfig(
         // 方案讨论
         // 1. 手动调用 dev.ts 的 createDevServer
         await restart();
+      }
+    },
+
+    configureServer(server) {
+      const publicDir = join(config.root, 'public');
+      if (fs.pathExistsSync(publicDir)) {
+        server.middlewares.use(sirv(publicDir));
       }
     }
   };
