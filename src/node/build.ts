@@ -21,13 +21,13 @@ export async function bundle(root: string, config: SiteConfig) {
         root,
         plugins: await createVitePlugins(config, undefined, isServer),
         ssr: {
-          noExternal: ['react-router-dom']
+          noExternal: ['react-router-dom', 'lodash-es']
         },
         build: {
           ssr: isServer,
           outDir: isServer
-            ? path.resolve(root, '.temp')
-            : path.resolve(root, 'build'),
+            ? path.join(root, '.temp')
+            : path.join(root, 'build'),
           rollupOptions: {
             input: isServer ? SERVER_ENTRY_PATH : CLIENT_ENTRY_PATH,
             output: {
@@ -63,7 +63,7 @@ export async function renderPages(
   await Promise.all(
     routes.map(async (route) => {
       const routePath = route.path;
-      const appHtml = render(routePath);
+      const appHtml = await render(routePath);
 
       const html = `
       <!DOCTYPE html>
@@ -95,7 +95,7 @@ export async function build(root: string = process.cwd(), config: SiteConfig) {
   const [clientBundle] = await bundle(root, config);
 
   // import server-entry module
-  const serverEntryPath = path.resolve(root, '.temp', 'ssr-entry.js');
+  const serverEntryPath = path.join(root, '.temp', 'ssr-entry.js');
   // ssr render, generate html
   const { render, routes } = await import(
     pathToFileURL(serverEntryPath).toString()

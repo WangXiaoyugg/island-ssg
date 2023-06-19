@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 declare module 'island:site-data' {
   import type { UserConfig } from 'shared/types';
   const siteData: UserConfig;
@@ -10,7 +11,7 @@ declare module 'island:routes' {
   export { routes };
 }
 
-declare module '*.module.scss' {
-  const classes: { [key: string]: string };
-  export default classes;
-}
+// declare module '*.module.scss' {
+//   const classes: { [key: string]: string };
+//   export default classes;
+// }
