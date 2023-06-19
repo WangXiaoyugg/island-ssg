@@ -1,5 +1,7 @@
-// import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { Header } from 'shared/types';
+import { bindingAsideScroll, scrollToTarget } from '../../logic/asideScroll';
+import { l } from 'vitest/dist/index-2f5b6168';
 
 interface AsideProps {
   headers: Header[];
@@ -9,6 +11,12 @@ export function Aside(props: AsideProps) {
   const { headers = [] } = props;
   const hasOutline = headers.length > 0;
   //   const markerRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const unbinding = bindingAsideScroll();
+    return () => {
+      unbinding();
+    };
+  }, []);
 
   const renderHeader = (header: Header) => {
     return (
@@ -18,6 +26,11 @@ export function Aside(props: AsideProps) {
           className="block leading-7 text-text-2 hover:text-text-1"
           transition="color duration-300"
           style={{ paddingLeft: (header.depth - 2) * 12 }}
+          onClick={(e) => {
+            e.preventDefault();
+            const target = document.getElementById(header.id);
+            target && scrollToTarget(target, false);
+          }}
         >
           {header.text}
         </a>
@@ -34,6 +47,7 @@ export function Aside(props: AsideProps) {
             className="relative divider-left pl-4 text-13px font-medium"
           >
             <div
+              id="aside-marker"
               className="absolute top-33px opacity-0 w-1px h-18px bg-brand"
               style={{
                 left: '-1px',
