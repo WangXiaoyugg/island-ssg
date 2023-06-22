@@ -5,6 +5,18 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@babel/core':
+    specifier: ^7.22.5
+    version: registry.npmmirror.com/@babel/core@7.22.5
+  '@babel/helper-plugin-utils':
+    specifier: ^7.22.5
+    version: registry.npmmirror.com/@babel/helper-plugin-utils@7.22.5
+  '@babel/preset-react':
+    specifier: ^7.22.5
+    version: registry.npmmirror.com/@babel/preset-react@7.22.5(@babel/core@7.22.5)
+  '@babel/traverse':
+    specifier: ^7.22.5
+    version: registry.npmmirror.com/@babel/traverse@7.22.5
   '@iconify-json/carbon':
     specifier: ^1.1.13
     version: registry.npmmirror.com/@iconify-json/carbon@1.1.18
@@ -449,6 +461,19 @@ packages:
       '@babel/helper-plugin-utils': registry.npmmirror.com/@babel/helper-plugin-utils@7.22.5
     dev: false
 
+  registry.npmmirror.com/@babel/plugin-transform-react-display-name@7.22.5(@babel/core@7.22.5):
+    resolution: {integrity: sha512-PVk3WPYudRF5z4GKMEYUrLjPl38fJSKNaEOkFuoprioowGuWN6w2RKznuFNSlJx7pzzXXStPUnNSOEO0jL5EVw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@babel/plugin-transform-react-display-name/-/plugin-transform-react-display-name-7.22.5.tgz}
+    id: registry.npmmirror.com/@babel/plugin-transform-react-display-name/7.22.5
+    name: '@babel/plugin-transform-react-display-name'
+    version: 7.22.5
+    engines: {node: '>=6.9.0'}
+    peerDependencies:
+      '@babel/core': ^7.0.0-0
+    dependencies:
+      '@babel/core': registry.npmmirror.com/@babel/core@7.22.5
+      '@babel/helper-plugin-utils': registry.npmmirror.com/@babel/helper-plugin-utils@7.22.5
+    dev: false
+
   registry.npmmirror.com/@babel/plugin-transform-react-jsx-development@7.22.5(@babel/core@7.22.5):
     resolution: {integrity: sha512-bDhuzwWMuInwCYeDeMzyi7TaBgRQei6DqxhbyniL7/VG4RSS7HtSL2QbY4eESy1KJqlWt8g3xeEBGPuo+XqC8A==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@babel/plugin-transform-react-jsx-development/-/plugin-transform-react-jsx-development-7.22.5.tgz}
     id: registry.npmmirror.com/@babel/plugin-transform-react-jsx-development/7.22.5
@@ -503,6 +528,38 @@ packages:
       '@babel/helper-plugin-utils': registry.npmmirror.com/@babel/helper-plugin-utils@7.22.5
       '@babel/plugin-syntax-jsx': registry.npmmirror.com/@babel/plugin-syntax-jsx@7.22.5(@babel/core@7.22.5)
       '@babel/types': registry.npmmirror.com/@babel/types@7.22.5
+    dev: false
+
+  registry.npmmirror.com/@babel/plugin-transform-react-pure-annotations@7.22.5(@babel/core@7.22.5):
+    resolution: {integrity: sha512-gP4k85wx09q+brArVinTXhWiyzLl9UpmGva0+mWyKxk6JZequ05x3eUcIUE+FyttPKJFRRVtAvQaJ6YF9h1ZpA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@babel/plugin-transform-react-pure-annotations/-/plugin-transform-react-pure-annotations-7.22.5.tgz}
+    id: registry.npmmirror.com/@babel/plugin-transform-react-pure-annotations/7.22.5
+    name: '@babel/plugin-transform-react-pure-annotations'
+    version: 7.22.5
+    engines: {node: '>=6.9.0'}
+    peerDependencies:
+      '@babel/core': ^7.0.0-0
+    dependencies:
+      '@babel/core': registry.npmmirror.com/@babel/core@7.22.5
+      '@babel/helper-annotate-as-pure': registry.npmmirror.com/@babel/helper-annotate-as-pure@7.22.5
+      '@babel/helper-plugin-utils': registry.npmmirror.com/@babel/helper-plugin-utils@7.22.5
+    dev: false
+
+  registry.npmmirror.com/@babel/preset-react@7.22.5(@babel/core@7.22.5):
+    resolution: {integrity: sha512-M+Is3WikOpEJHgR385HbuCITPTaPRaNkibTEa9oiofmJvIsrceb4yp9RL9Kb+TE8LznmeyZqpP+Lopwcx59xPQ==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@babel/preset-react/-/preset-react-7.22.5.tgz}
+    id: registry.npmmirror.com/@babel/preset-react/7.22.5
+    name: '@babel/preset-react'
+    version: 7.22.5
+    engines: {node: '>=6.9.0'}
+    peerDependencies:
+      '@babel/core': ^7.0.0-0
+    dependencies:
+      '@babel/core': registry.npmmirror.com/@babel/core@7.22.5
+      '@babel/helper-plugin-utils': registry.npmmirror.com/@babel/helper-plugin-utils@7.22.5
+      '@babel/helper-validator-option': registry.npmmirror.com/@babel/helper-validator-option@7.22.5
+      '@babel/plugin-transform-react-display-name': registry.npmmirror.com/@babel/plugin-transform-react-display-name@7.22.5(@babel/core@7.22.5)
+      '@babel/plugin-transform-react-jsx': registry.npmmirror.com/@babel/plugin-transform-react-jsx@7.22.5(@babel/core@7.22.5)
+      '@babel/plugin-transform-react-jsx-development': registry.npmmirror.com/@babel/plugin-transform-react-jsx-development@7.22.5(@babel/core@7.22.5)
+      '@babel/plugin-transform-react-pure-annotations': registry.npmmirror.com/@babel/plugin-transform-react-pure-annotations@7.22.5(@babel/core@7.22.5)
     dev: false
 
   registry.npmmirror.com/@babel/runtime@7.22.5:
