@@ -69,73 +69,6 @@ export async function bundle(root: string, config: SiteConfig) {
   }
 }
 
-// async function buildIslands(
-//   root: string,
-//   islandPathToMap: Record<string, string>
-// ) {
-//   // { Aside: 'xxx' }
-//   // 内容
-//   // import { Aside } from 'xxx'
-//   // window.ISLANDS = { Aside }
-//   // window.ISLAND_PROPS = JSON.parse(
-//   // document.getElementById('island-props').textContent
-//   // );
-//   const islandsInjectCode = `
-//     ${Object.entries(islandPathToMap)
-//       .map(
-//         ([islandName, islandPath]) =>
-//           `import { ${islandName} } from '${islandPath}'`
-//       )
-//       .join('')}
-// window.ISLANDS = { ${Object.keys(islandPathToMap).join(', ')} };
-// window.ISLAND_PROPS = JSON.parse(
-//   document.getElementById('island-props').textContent
-// );
-//   `;
-//   const injectId = 'island:inject';
-//   return viteBuild({
-//     mode: 'production',
-//     esbuild: {
-//       jsx: 'automatic'
-//     },
-//     build: {
-//       outDir: path.join(root, '.temp'),
-//       rollupOptions: {
-//         input: injectId,
-//         external: EXTERNALS
-//       }
-//     },
-//     plugins: [
-//       {
-//         name: 'island:inject',
-//         enforce: 'post',
-//         resolveId(id) {
-//           if (id.includes(MASK_SPLITTER)) {
-//             const [originId, importer] = id.split(MASK_SPLITTER);
-//             return this.resolve(originId, importer, { skipSelf: true });
-//           }
-
-//           if (id === injectId) {
-//             return id;
-//           }
-//         },
-//         load(id) {
-//           if (id === injectId) {
-//             return islandsInjectCode;
-//           }
-//         },
-//         generateBundle(_, bundle) {
-//           for (const name in bundle) {
-//             if (bundle[name].type === 'asset') {
-//               delete bundle[name];
-//             }
-//           }
-//         }
-//       }
-//     ]
-//   });
-// }
-
 async function buildIslands(
   root: string,
   islandPathToMap: Record<string, string>
@@ -153,7 +86,7 @@ async function buildIslands(
       )
       .join('')}
     window.ISLANDS = { ${Object.keys(islandPathToMap).join(',')} };
-    windows.ISLAND_PROPS = JSON.parse(
+    window.ISLAND_PROPS = JSON.parse(
       document.getElementById('island-props').textContent
     );
   `;
@@ -199,46 +132,6 @@ async function buildIslands(
       }
     ]
   });
-  return viteBuild({
-    mode: 'production',
-    esbuild: {
-      jsx: 'automatic'
-    },
-    build: {
-      outDir: path.join(root, '.temp'),
-      rollupOptions: {
-        input: injectId,
-        external: EXTERNALS
-      }
-    },
-    plugins: [
-      {
-        name: 'island:inject',
-        enforce: 'post',
-        resolveId(id) {
-          if (id.includes(MASK_SPLITTER)) {
-            const [originId, importer] = id.split(MASK_SPLITTER);
-            return this.resolve(originId, importer, { skipSelf: true });
-          }
-          if (id === injectId) {
-            return injectId;
-          }
-        },
-        load(id) {
-          if (id === injectId) {
-            return islandsInjectCode;
-          }
-        },
-        generateBundle(_, bundle) {
-          for (const name in bundle) {
-            if (bundle[name].type === 'asset') {
-              delete bundle[name];
-            }
-          }
-        }
-      }
-    ]
-  });
 }
 
 export async function renderPages(
@@ -262,7 +155,8 @@ export async function renderPages(
       const styleAssets = clientBundle.output.filter(
         (chunk) => chunk.type === 'asset' && chunk.fileName.endsWith('css')
       );
-      await buildIslands(root, islandToPathMap);
+      const islandBundle = await buildIslands(root, islandToPathMap);
+      const islandCode = (islandBundle as RollupOutput).output[0].code;
       const html = `
       <!DOCTYPE html>
       <html lang="en">
@@ -286,6 +180,7 @@ export async function renderPages(
               }
             }
           </script>
+          <script type="module">${islandCode}</script>
           <script src="/${clientChunk.fileName}" type="module"></script>
           <script id="island-props">${JSON.stringify(islandProps)}</script>
       </body>
