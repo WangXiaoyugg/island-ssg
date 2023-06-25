@@ -3,6 +3,7 @@ import { App } from './App';
 import { BrowserRouter } from 'react-router-dom';
 import { initPageData } from './App';
 import { DataContext } from './hooks';
+import { HelmetProvider } from 'react-helmet-async';
 
 async function renderInBrowser() {
   const containerElement = document.getElementById('root');
@@ -11,11 +12,13 @@ async function renderInBrowser() {
   }
   const pageData = await initPageData(location.pathname);
   createRoot(containerElement).render(
-    <DataContext.Provider value={pageData}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </DataContext.Provider>
+    <HelmetProvider>
+      <DataContext.Provider value={pageData}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </DataContext.Provider>
+    </HelmetProvider>
   );
 }
 

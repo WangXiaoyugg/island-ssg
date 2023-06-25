@@ -11,13 +11,14 @@ export async function initPageData(routePath: string): Promise<PageData> {
   if (matched) {
     const route = matched[0].route as Route;
     const moduleInfo = await route.preload();
-
+    console.log('title: ', moduleInfo.title);
     return {
       pageType: moduleInfo.frontmatter?.pageType ?? 'doc',
       siteData,
       frontmatter: moduleInfo.frontmatter,
       pagePath: routePath,
-      toc: moduleInfo.toc
+      toc: moduleInfo.toc,
+      title: moduleInfo.title
     };
   }
 
@@ -25,7 +26,8 @@ export async function initPageData(routePath: string): Promise<PageData> {
     pageType: '404',
     siteData,
     frontmatter: {},
-    pagePath: routePath
+    pagePath: routePath,
+    title: '404'
   };
 }
 

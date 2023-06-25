@@ -21,11 +21,16 @@ export const remarkPluginToc: Plugin<[], Root> = () => {
   return (tree) => {
     const toc: TocItem[] = [];
     const slugger = new Slugger();
-
+    let title = '';
     visit(tree, 'heading', (node) => {
       if (!node.depth || !node.children?.length) {
         return;
       }
+      // h1 标题
+      if (node.depth === 1) {
+        title = (node.children[0] as ChildNode).value;
+      }
+
       // h2 ~ h4 的标题节点
       if (node.depth > 1 && node.depth < 5) {
         const originalText = (node.children as ChildNode[])
@@ -60,5 +65,19 @@ export const remarkPluginToc: Plugin<[], Root> = () => {
         }) as unknown as Program
       }
     });
+
+    if (title) {
+      const insertedTitle = `export const title = '${title}'`;
+      tree.children.push({
+        type: 'mdxjsEsm',
+        value: insertedTitle,
+        data: {
+          estree: parse(insertedTitle, {
+            ecmaVersion: 2020,
+            sourceType: 'module'
+          }) as unknown as Program
+        }
+      });
+    }
   };
 };
