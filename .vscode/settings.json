@@ -4,7 +4,7 @@
   "editor.quickSuggestions": {
     "strings": "on"
   },
-  "cSpell.words": ["frontmatter"],
+  "cSpell.words": ["frontmatter", "prebundle"],
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   }

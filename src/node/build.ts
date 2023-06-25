@@ -1,7 +1,9 @@
 import { InlineConfig, build as viteBuild } from 'vite';
 import {
   CLIENT_ENTRY_PATH,
+  EXTERNALS,
   MASK_SPLITTER,
+  PACKAGE_ROOT,
   SERVER_ENTRY_PATH
 } from './constants';
 import type { RollupOutput } from 'rollup';
@@ -14,7 +16,7 @@ import { createVitePlugins } from './vitePlugins';
 import { Route } from './plugin-routes';
 import { RenderResult } from '../runtime/ssr-entry';
 
-// const dynamicImport = new Function('m', 'return import(m)');
+const CLIENT_OUTPUT = 'build';
 
 export async function bundle(root: string, config: SiteConfig) {
   try {
@@ -32,12 +34,13 @@ export async function bundle(root: string, config: SiteConfig) {
           ssr: isServer,
           outDir: isServer
             ? path.join(root, '.temp')
-            : path.join(root, 'build'),
+            : path.join(root, CLIENT_OUTPUT),
           rollupOptions: {
             input: isServer ? SERVER_ENTRY_PATH : CLIENT_ENTRY_PATH,
             output: {
               format: isServer ? 'cjs' : 'esm'
-            }
+            },
+            external: EXTERNALS
           }
         }
       };
@@ -49,6 +52,17 @@ export async function bundle(root: string, config: SiteConfig) {
       // server build
       viteBuild(await resolveViteConfig(true))
     ]);
+
+    const publicDic = path.join(root, 'public');
+    if (fs.pathExistsSync(publicDic)) {
+      await fs.copy(publicDic, path.join(root, CLIENT_OUTPUT));
+    }
+
+    await fs.copy(
+      path.join(PACKAGE_ROOT, 'vendors'),
+      path.join(root, CLIENT_OUTPUT)
+    );
+
     return [clientBundle, serverBundle] as [RollupOutput, RollupOutput];
   } catch (e) {
     console.log('error: ', e);
@@ -81,10 +95,14 @@ export async function bundle(root: string, config: SiteConfig) {
 //   const injectId = 'island:inject';
 //   return viteBuild({
 //     mode: 'production',
+//     esbuild: {
+//       jsx: 'automatic'
+//     },
 //     build: {
 //       outDir: path.join(root, '.temp'),
 //       rollupOptions: {
-//         input: injectId
+//         input: injectId,
+//         external: EXTERNALS
 //       }
 //     },
 //     plugins: [
@@ -142,10 +160,55 @@ async function buildIslands(
   const injectId = 'island:inject';
   return viteBuild({
     mode: 'production',
+    esbuild: {
+      jsx: 'automatic'
+    },
     build: {
       outDir: path.join(root, '.temp'),
       rollupOptions: {
-        input: injectId
+        input: injectId,
+        external: EXTERNALS
+      }
+    },
+    plugins: [
+      {
+        name: 'island:inject',
+        enforce: 'post',
+        resolveId(id) {
+          if (id.includes(MASK_SPLITTER)) {
+            const [originId, importer] = id.split(MASK_SPLITTER);
+            return this.resolve(originId, importer, { skipSelf: true });
+          }
+
+          if (id === injectId) {
+            return id;
+          }
+        },
+        load(id) {
+          if (id === injectId) {
+            return islandsInjectCode;
+          }
+        },
+        generateBundle(_, bundle) {
+          for (const name in bundle) {
+            if (bundle[name].type === 'asset') {
+              delete bundle[name];
+            }
+          }
+        }
+      }
+    ]
+  });
+  return viteBuild({
+    mode: 'production',
+    esbuild: {
+      jsx: 'automatic'
+    },
+    build: {
+      outDir: path.join(root, '.temp'),
+      rollupOptions: {
+        input: injectId,
+        external: EXTERNALS
       }
     },
     plugins: [
@@ -167,11 +230,11 @@ async function buildIslands(
           }
         },
         generateBundle(_, bundle) {
-          // for (const name in bundle) {
-          //   if (bundle[name].type === 'asset') {
-          //     delete bundle[name];
-          //   }
-          // }
+          for (const name in bundle) {
+            if (bundle[name].type === 'asset') {
+              delete bundle[name];
+            }
+          }
         }
       }
     ]
@@ -188,10 +251,17 @@ export async function renderPages(
     (chunk) => chunk.type === 'chunk' && chunk.isEntry
   );
 
+  const normalizeVendorFileName = (filename: string) => {
+    return filename.replace(/\//g, '_') + '.js';
+  };
+
   await Promise.all(
     routes.map(async (route) => {
       const routePath = route.path;
-      const { appHtml, islandToPathMap, propsData } = await render(routePath);
+      const { appHtml, islandToPathMap, islandProps } = await render(routePath);
+      const styleAssets = clientBundle.output.filter(
+        (chunk) => chunk.type === 'asset' && chunk.fileName.endsWith('css')
+      );
       await buildIslands(root, islandToPathMap);
       const html = `
       <!DOCTYPE html>
@@ -201,10 +271,23 @@ export async function renderPages(
           <meta http-equiv="X-UA-Compatible" content="IE=edge">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>template</title>
+          ${styleAssets
+            .map((item) => `<link rel="stylesheet" href="/${item.fileName}">`)
+            .join('\n')}
       </head>
       <body>
           <div id="root">${appHtml}</div>
+          <script type="importmap">
+            {
+              "imports": {
+                ${EXTERNALS.map(
+                  (name) => `"${name}": "/${normalizeVendorFileName(name)}"`
+                ).join(',')}
+              }
+            }
+          </script>
           <script src="/${clientChunk.fileName}" type="module"></script>
+          <script id="island-props">${JSON.stringify(islandProps)}</script>
       </body>
       </html>
   `.trim();
