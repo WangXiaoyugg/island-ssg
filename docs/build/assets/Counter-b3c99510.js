@@ -1,1 +1,0 @@
-import{r as o,a as s,j as t}from"./client-entry-24c64711.js";function c(){const[n,r]=o.useState(0);return s("div",{children:[t("p",{children:n}),t("button",{onClick:()=>r(e=>e+1),children:"点击加1"})]})}export{c as default};

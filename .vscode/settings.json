@@ -4,5 +4,8 @@
   "editor.quickSuggestions": {
     "strings": "on"
   },
-  "cSpell.words": ["frontmatter"]
+  "cSpell.words": ["frontmatter"],
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }

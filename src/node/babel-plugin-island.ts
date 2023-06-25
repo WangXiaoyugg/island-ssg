@@ -9,17 +9,20 @@ export default declare((api) => {
   api.assertVersion(7);
 
   const visitor: Visitor<PluginPass> = {
+    // <A __island>
+    // <A.B __island>
     JSXOpeningElement(path, state) {
       const name = path.node.name;
       let bindingName = '';
       if (name.type === 'JSXIdentifier') {
         bindingName = name.name;
       } else if (name.type === 'JSXMemberExpression') {
-        let obj = name.object;
-        while (t.isJSXMemberExpression(obj)) {
-          obj = obj.object;
+        let object = name.object;
+        // A.B.C
+        while (t.isJSXMemberExpression(object)) {
+          object = object.object;
         }
-        bindingName = obj.name;
+        bindingName = object.name;
       } else {
         return;
       }
@@ -30,7 +33,6 @@ export default declare((api) => {
         const source = binding.path.parent.source;
         const attributes = (path.container as t.JSXElement).openingElement
           .attributes;
-
         for (let i = 0; i < attributes.length; i++) {
           const name = (attributes[i] as t.JSXAttribute).name;
           if (name?.name === '__island') {
