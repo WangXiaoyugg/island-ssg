@@ -15,18 +15,18 @@ const defaultOptions = {
 async function prepareE2E() {
   if (!fse.existsSync(path.resolve(__dirname, '../dist'))) {
     // pnpm build
-    execa.execaCommandSync('pnpm build', {
+    execa.commandSync('pnpm build', {
       cwd: ROOT_DIR,
       ...defaultOptions
     });
   }
 
-  execa.execaCommandSync('npx playwright install', {
+  execa.commandSync('npx playwright install', {
     cwd: ROOT_DIR,
     ...defaultOptions
   });
 
-  execa.execaCommandSync('pnpm dev', {
+  execa.commandSync('pnpm dev', {
     cwd: exampleDir,
     ...defaultOptions
   });
